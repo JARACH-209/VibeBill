@@ -1,0 +1,1053 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-07-14",
+  "source": "LiteLLM community price table (BerriAI/litellm model_prices_and_context_window.json, main branch), fetched 2026-07-14 at vibebill build time; per-token costs converted to $/MTok decimal strings. Models absent from the source are omitted, never invented.",
+  "models": {
+    "chatgpt-4o-latest": {
+      "displayName": "chatgpt-4o-latest",
+      "inputPerMTok": "5",
+      "outputPerMTok": "15"
+    },
+    "claude-3-7-sonnet-20250219": {
+      "displayName": "claude-3-7-sonnet-20250219",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-3-haiku-20240307": {
+      "displayName": "claude-3-haiku-20240307",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "1.25",
+      "cacheWritePerMTok": "0.3",
+      "cacheReadPerMTok": "0.03"
+    },
+    "claude-3-opus-20240229": {
+      "displayName": "claude-3-opus-20240229",
+      "inputPerMTok": "15",
+      "outputPerMTok": "75",
+      "cacheWritePerMTok": "18.75",
+      "cacheReadPerMTok": "1.5"
+    },
+    "claude-4-opus-20250514": {
+      "displayName": "claude-4-opus-20250514",
+      "inputPerMTok": "15",
+      "outputPerMTok": "75",
+      "cacheWritePerMTok": "18.75",
+      "cacheReadPerMTok": "1.5"
+    },
+    "claude-4-sonnet-20250514": {
+      "displayName": "claude-4-sonnet-20250514",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-fable-5": {
+      "displayName": "claude-fable-5",
+      "inputPerMTok": "10",
+      "outputPerMTok": "50",
+      "cacheWritePerMTok": "12.5",
+      "cacheReadPerMTok": "1"
+    },
+    "claude-haiku-4-5": {
+      "displayName": "claude-haiku-4-5",
+      "inputPerMTok": "1",
+      "outputPerMTok": "5",
+      "cacheWritePerMTok": "1.25",
+      "cacheReadPerMTok": "0.1"
+    },
+    "claude-haiku-4-5-20251001": {
+      "displayName": "claude-haiku-4-5-20251001",
+      "inputPerMTok": "1",
+      "outputPerMTok": "5",
+      "cacheWritePerMTok": "1.25",
+      "cacheReadPerMTok": "0.1"
+    },
+    "claude-opus-4-1": {
+      "displayName": "claude-opus-4-1",
+      "inputPerMTok": "15",
+      "outputPerMTok": "75",
+      "cacheWritePerMTok": "18.75",
+      "cacheReadPerMTok": "1.5"
+    },
+    "claude-opus-4-1-20250805": {
+      "displayName": "claude-opus-4-1-20250805",
+      "inputPerMTok": "15",
+      "outputPerMTok": "75",
+      "cacheWritePerMTok": "18.75",
+      "cacheReadPerMTok": "1.5"
+    },
+    "claude-opus-4-20250514": {
+      "displayName": "claude-opus-4-20250514",
+      "inputPerMTok": "15",
+      "outputPerMTok": "75",
+      "cacheWritePerMTok": "18.75",
+      "cacheReadPerMTok": "1.5"
+    },
+    "claude-opus-4-5": {
+      "displayName": "claude-opus-4-5",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-5-20251101": {
+      "displayName": "claude-opus-4-5-20251101",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-6": {
+      "displayName": "claude-opus-4-6",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-6-20260205": {
+      "displayName": "claude-opus-4-6-20260205",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-7": {
+      "displayName": "claude-opus-4-7",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-7-20260416": {
+      "displayName": "claude-opus-4-7-20260416",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-opus-4-8": {
+      "displayName": "claude-opus-4-8",
+      "inputPerMTok": "5",
+      "outputPerMTok": "25",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "claude-sonnet-4-20250514": {
+      "displayName": "claude-sonnet-4-20250514",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-sonnet-4-5": {
+      "displayName": "claude-sonnet-4-5",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-sonnet-4-5-20250929": {
+      "displayName": "claude-sonnet-4-5-20250929",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-sonnet-4-6": {
+      "displayName": "claude-sonnet-4-6",
+      "inputPerMTok": "3",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.75",
+      "cacheReadPerMTok": "0.3"
+    },
+    "claude-sonnet-5": {
+      "displayName": "claude-sonnet-5",
+      "inputPerMTok": "2",
+      "outputPerMTok": "10",
+      "cacheWritePerMTok": "2.5",
+      "cacheReadPerMTok": "0.2"
+    },
+    "codex-mini-latest": {
+      "displayName": "codex-mini-latest",
+      "inputPerMTok": "1.5",
+      "outputPerMTok": "6",
+      "cacheReadPerMTok": "0.375"
+    },
+    "deepseek-chat": {
+      "displayName": "deepseek-chat",
+      "inputPerMTok": "0.28",
+      "outputPerMTok": "0.42",
+      "cacheWritePerMTok": "0",
+      "cacheReadPerMTok": "0.028"
+    },
+    "deepseek-coder": {
+      "displayName": "deepseek-coder",
+      "inputPerMTok": "0.14",
+      "outputPerMTok": "0.28"
+    },
+    "deepseek-r1": {
+      "displayName": "deepseek-r1",
+      "inputPerMTok": "0.55",
+      "outputPerMTok": "2.19"
+    },
+    "deepseek-reasoner": {
+      "displayName": "deepseek-reasoner",
+      "inputPerMTok": "0.28",
+      "outputPerMTok": "0.42",
+      "cacheReadPerMTok": "0.028"
+    },
+    "deepseek-v3": {
+      "displayName": "deepseek-v3",
+      "inputPerMTok": "0.27",
+      "outputPerMTok": "1.1",
+      "cacheWritePerMTok": "0",
+      "cacheReadPerMTok": "0.07"
+    },
+    "deepseek-v3.2": {
+      "displayName": "deepseek-v3.2",
+      "inputPerMTok": "0.28",
+      "outputPerMTok": "0.4"
+    },
+    "deepseek-v4-flash": {
+      "displayName": "deepseek-v4-flash",
+      "inputPerMTok": "0.14",
+      "outputPerMTok": "0.28",
+      "cacheWritePerMTok": "0",
+      "cacheReadPerMTok": "0.0028"
+    },
+    "deepseek-v4-pro": {
+      "displayName": "deepseek-v4-pro",
+      "inputPerMTok": "0.435",
+      "outputPerMTok": "0.87",
+      "cacheWritePerMTok": "0",
+      "cacheReadPerMTok": "0.003625"
+    },
+    "gemini-2.0-flash": {
+      "displayName": "gemini-2.0-flash",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-2.0-flash-001": {
+      "displayName": "gemini-2.0-flash-001",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-2.0-flash-lite": {
+      "displayName": "gemini-2.0-flash-lite",
+      "inputPerMTok": "0.075",
+      "outputPerMTok": "0.3",
+      "cacheReadPerMTok": "0.01875"
+    },
+    "gemini-2.0-flash-lite-001": {
+      "displayName": "gemini-2.0-flash-lite-001",
+      "inputPerMTok": "0.075",
+      "outputPerMTok": "0.3",
+      "cacheReadPerMTok": "0.01875"
+    },
+    "gemini-2.5-computer-use-preview-10-2025": {
+      "displayName": "gemini-2.5-computer-use-preview-10-2025",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10"
+    },
+    "gemini-2.5-flash": {
+      "displayName": "gemini-2.5-flash",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5",
+      "cacheReadPerMTok": "0.03"
+    },
+    "gemini-2.5-flash-lite": {
+      "displayName": "gemini-2.5-flash-lite",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.01"
+    },
+    "gemini-2.5-flash-lite-preview-06-17": {
+      "displayName": "gemini-2.5-flash-lite-preview-06-17",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-2.5-flash-lite-preview-09-2025": {
+      "displayName": "gemini-2.5-flash-lite-preview-09-2025",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.01"
+    },
+    "gemini-2.5-flash-native-audio-latest": {
+      "displayName": "gemini-2.5-flash-native-audio-latest",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5"
+    },
+    "gemini-2.5-flash-native-audio-preview-09-2025": {
+      "displayName": "gemini-2.5-flash-native-audio-preview-09-2025",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5"
+    },
+    "gemini-2.5-flash-native-audio-preview-12-2025": {
+      "displayName": "gemini-2.5-flash-native-audio-preview-12-2025",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5"
+    },
+    "gemini-2.5-flash-preview-09-2025": {
+      "displayName": "gemini-2.5-flash-preview-09-2025",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gemini-2.5-pro": {
+      "displayName": "gemini-2.5-pro",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gemini-2.5-pro-preview-tts": {
+      "displayName": "gemini-2.5-pro-preview-tts",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gemini-3-flash-preview": {
+      "displayName": "gemini-3-flash-preview",
+      "inputPerMTok": "0.5",
+      "outputPerMTok": "3",
+      "cacheReadPerMTok": "0.05"
+    },
+    "gemini-3-pro-preview": {
+      "displayName": "gemini-3-pro-preview",
+      "inputPerMTok": "2",
+      "outputPerMTok": "12",
+      "cacheReadPerMTok": "0.2"
+    },
+    "gemini-3.1-flash-lite": {
+      "displayName": "gemini-3.1-flash-lite",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "1.5",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-3.1-flash-lite-preview": {
+      "displayName": "gemini-3.1-flash-lite-preview",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "1.5",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-3.1-flash-live-preview": {
+      "displayName": "gemini-3.1-flash-live-preview",
+      "inputPerMTok": "0.75",
+      "outputPerMTok": "4.5"
+    },
+    "gemini-3.1-pro-preview": {
+      "displayName": "gemini-3.1-pro-preview",
+      "inputPerMTok": "2",
+      "outputPerMTok": "12",
+      "cacheReadPerMTok": "0.2"
+    },
+    "gemini-3.1-pro-preview-customtools": {
+      "displayName": "gemini-3.1-pro-preview-customtools",
+      "inputPerMTok": "2",
+      "outputPerMTok": "12",
+      "cacheReadPerMTok": "0.2"
+    },
+    "gemini-3.5-flash": {
+      "displayName": "gemini-3.5-flash",
+      "inputPerMTok": "1.5",
+      "outputPerMTok": "9",
+      "cacheReadPerMTok": "0.15"
+    },
+    "gemini-exp-1114": {
+      "displayName": "gemini-exp-1114",
+      "inputPerMTok": "0",
+      "outputPerMTok": "0"
+    },
+    "gemini-exp-1206": {
+      "displayName": "gemini-exp-1206",
+      "inputPerMTok": "0",
+      "outputPerMTok": "0"
+    },
+    "gemini-flash-latest": {
+      "displayName": "gemini-flash-latest",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gemini-flash-lite-latest": {
+      "displayName": "gemini-flash-lite-latest",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gemini-gemma-2-27b-it": {
+      "displayName": "gemini-gemma-2-27b-it",
+      "inputPerMTok": "0.35",
+      "outputPerMTok": "1.05"
+    },
+    "gemini-gemma-2-9b-it": {
+      "displayName": "gemini-gemma-2-9b-it",
+      "inputPerMTok": "0.35",
+      "outputPerMTok": "1.05"
+    },
+    "gemini-pro-latest": {
+      "displayName": "gemini-pro-latest",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gemini-robotics-er-1.5-preview": {
+      "displayName": "gemini-robotics-er-1.5-preview",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "2.5",
+      "cacheReadPerMTok": "0"
+    },
+    "gpt-3.5-turbo": {
+      "displayName": "gpt-3.5-turbo",
+      "inputPerMTok": "0.5",
+      "outputPerMTok": "1.5"
+    },
+    "gpt-3.5-turbo-0125": {
+      "displayName": "gpt-3.5-turbo-0125",
+      "inputPerMTok": "0.5",
+      "outputPerMTok": "1.5"
+    },
+    "gpt-3.5-turbo-1106": {
+      "displayName": "gpt-3.5-turbo-1106",
+      "inputPerMTok": "1",
+      "outputPerMTok": "2"
+    },
+    "gpt-3.5-turbo-16k": {
+      "displayName": "gpt-3.5-turbo-16k",
+      "inputPerMTok": "3",
+      "outputPerMTok": "4"
+    },
+    "gpt-4": {
+      "displayName": "gpt-4",
+      "inputPerMTok": "30",
+      "outputPerMTok": "60"
+    },
+    "gpt-4-0125-preview": {
+      "displayName": "gpt-4-0125-preview",
+      "inputPerMTok": "10",
+      "outputPerMTok": "30"
+    },
+    "gpt-4-0314": {
+      "displayName": "gpt-4-0314",
+      "inputPerMTok": "30",
+      "outputPerMTok": "60"
+    },
+    "gpt-4-0613": {
+      "displayName": "gpt-4-0613",
+      "inputPerMTok": "30",
+      "outputPerMTok": "60"
+    },
+    "gpt-4-1106-preview": {
+      "displayName": "gpt-4-1106-preview",
+      "inputPerMTok": "10",
+      "outputPerMTok": "30"
+    },
+    "gpt-4-turbo": {
+      "displayName": "gpt-4-turbo",
+      "inputPerMTok": "10",
+      "outputPerMTok": "30"
+    },
+    "gpt-4-turbo-2024-04-09": {
+      "displayName": "gpt-4-turbo-2024-04-09",
+      "inputPerMTok": "10",
+      "outputPerMTok": "30"
+    },
+    "gpt-4-turbo-preview": {
+      "displayName": "gpt-4-turbo-preview",
+      "inputPerMTok": "10",
+      "outputPerMTok": "30"
+    },
+    "gpt-4.1": {
+      "displayName": "gpt-4.1",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-4.1-2025-04-14": {
+      "displayName": "gpt-4.1-2025-04-14",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-4.1-mini": {
+      "displayName": "gpt-4.1-mini",
+      "inputPerMTok": "0.4",
+      "outputPerMTok": "1.6",
+      "cacheReadPerMTok": "0.1"
+    },
+    "gpt-4.1-mini-2025-04-14": {
+      "displayName": "gpt-4.1-mini-2025-04-14",
+      "inputPerMTok": "0.4",
+      "outputPerMTok": "1.6",
+      "cacheReadPerMTok": "0.1"
+    },
+    "gpt-4.1-nano": {
+      "displayName": "gpt-4.1-nano",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gpt-4.1-nano-2025-04-14": {
+      "displayName": "gpt-4.1-nano-2025-04-14",
+      "inputPerMTok": "0.1",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gpt-4o": {
+      "displayName": "gpt-4o",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "1.25"
+    },
+    "gpt-4o-2024-05-13": {
+      "displayName": "gpt-4o-2024-05-13",
+      "inputPerMTok": "5",
+      "outputPerMTok": "15"
+    },
+    "gpt-4o-2024-08-06": {
+      "displayName": "gpt-4o-2024-08-06",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "1.25"
+    },
+    "gpt-4o-2024-11-20": {
+      "displayName": "gpt-4o-2024-11-20",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "1.25"
+    },
+    "gpt-4o-audio-preview": {
+      "displayName": "gpt-4o-audio-preview",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-4o-audio-preview-2024-12-17": {
+      "displayName": "gpt-4o-audio-preview-2024-12-17",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-4o-audio-preview-2025-06-03": {
+      "displayName": "gpt-4o-audio-preview-2025-06-03",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-4o-mini": {
+      "displayName": "gpt-4o-mini",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-4o-mini-2024-07-18": {
+      "displayName": "gpt-4o-mini-2024-07-18",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-4o-mini-audio-preview": {
+      "displayName": "gpt-4o-mini-audio-preview",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6"
+    },
+    "gpt-4o-mini-audio-preview-2024-12-17": {
+      "displayName": "gpt-4o-mini-audio-preview-2024-12-17",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6"
+    },
+    "gpt-4o-mini-realtime-preview": {
+      "displayName": "gpt-4o-mini-realtime-preview",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4",
+      "cacheReadPerMTok": "0.3"
+    },
+    "gpt-4o-mini-realtime-preview-2024-12-17": {
+      "displayName": "gpt-4o-mini-realtime-preview-2024-12-17",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4",
+      "cacheReadPerMTok": "0.3"
+    },
+    "gpt-4o-mini-search-preview": {
+      "displayName": "gpt-4o-mini-search-preview",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-4o-mini-search-preview-2025-03-11": {
+      "displayName": "gpt-4o-mini-search-preview-2025-03-11",
+      "inputPerMTok": "0.15",
+      "outputPerMTok": "0.6",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-4o-realtime-preview": {
+      "displayName": "gpt-4o-realtime-preview",
+      "inputPerMTok": "5",
+      "outputPerMTok": "20",
+      "cacheReadPerMTok": "2.5"
+    },
+    "gpt-4o-realtime-preview-2024-12-17": {
+      "displayName": "gpt-4o-realtime-preview-2024-12-17",
+      "inputPerMTok": "5",
+      "outputPerMTok": "20",
+      "cacheReadPerMTok": "2.5"
+    },
+    "gpt-4o-realtime-preview-2025-06-03": {
+      "displayName": "gpt-4o-realtime-preview-2025-06-03",
+      "inputPerMTok": "5",
+      "outputPerMTok": "20",
+      "cacheReadPerMTok": "2.5"
+    },
+    "gpt-4o-search-preview": {
+      "displayName": "gpt-4o-search-preview",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "1.25"
+    },
+    "gpt-4o-search-preview-2025-03-11": {
+      "displayName": "gpt-4o-search-preview-2025-03-11",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "1.25"
+    },
+    "gpt-5": {
+      "displayName": "gpt-5",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-2025-08-07": {
+      "displayName": "gpt-5-2025-08-07",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-chat": {
+      "displayName": "gpt-5-chat",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-chat-latest": {
+      "displayName": "gpt-5-chat-latest",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-codex": {
+      "displayName": "gpt-5-codex",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-mini": {
+      "displayName": "gpt-5-mini",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "2",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gpt-5-mini-2025-08-07": {
+      "displayName": "gpt-5-mini-2025-08-07",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "2",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gpt-5-nano": {
+      "displayName": "gpt-5-nano",
+      "inputPerMTok": "0.05",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.005"
+    },
+    "gpt-5-nano-2025-08-07": {
+      "displayName": "gpt-5-nano-2025-08-07",
+      "inputPerMTok": "0.05",
+      "outputPerMTok": "0.4",
+      "cacheReadPerMTok": "0.005"
+    },
+    "gpt-5-pro": {
+      "displayName": "gpt-5-pro",
+      "inputPerMTok": "15",
+      "outputPerMTok": "120"
+    },
+    "gpt-5-pro-2025-10-06": {
+      "displayName": "gpt-5-pro-2025-10-06",
+      "inputPerMTok": "15",
+      "outputPerMTok": "120"
+    },
+    "gpt-5-search-api": {
+      "displayName": "gpt-5-search-api",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5-search-api-2025-10-14": {
+      "displayName": "gpt-5-search-api-2025-10-14",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1": {
+      "displayName": "gpt-5.1",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1-2025-11-13": {
+      "displayName": "gpt-5.1-2025-11-13",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1-chat-latest": {
+      "displayName": "gpt-5.1-chat-latest",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1-codex": {
+      "displayName": "gpt-5.1-codex",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1-codex-max": {
+      "displayName": "gpt-5.1-codex-max",
+      "inputPerMTok": "1.25",
+      "outputPerMTok": "10",
+      "cacheReadPerMTok": "0.125"
+    },
+    "gpt-5.1-codex-mini": {
+      "displayName": "gpt-5.1-codex-mini",
+      "inputPerMTok": "0.25",
+      "outputPerMTok": "2",
+      "cacheReadPerMTok": "0.025"
+    },
+    "gpt-5.2": {
+      "displayName": "gpt-5.2",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.2-2025-12-11": {
+      "displayName": "gpt-5.2-2025-12-11",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.2-chat-latest": {
+      "displayName": "gpt-5.2-chat-latest",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.2-codex": {
+      "displayName": "gpt-5.2-codex",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.2-pro": {
+      "displayName": "gpt-5.2-pro",
+      "inputPerMTok": "21",
+      "outputPerMTok": "168"
+    },
+    "gpt-5.2-pro-2025-12-11": {
+      "displayName": "gpt-5.2-pro-2025-12-11",
+      "inputPerMTok": "21",
+      "outputPerMTok": "168"
+    },
+    "gpt-5.3-chat-latest": {
+      "displayName": "gpt-5.3-chat-latest",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.3-codex": {
+      "displayName": "gpt-5.3-codex",
+      "inputPerMTok": "1.75",
+      "outputPerMTok": "14",
+      "cacheReadPerMTok": "0.175"
+    },
+    "gpt-5.4": {
+      "displayName": "gpt-5.4",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "15",
+      "cacheReadPerMTok": "0.25"
+    },
+    "gpt-5.4-2026-03-05": {
+      "displayName": "gpt-5.4-2026-03-05",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "15",
+      "cacheReadPerMTok": "0.25"
+    },
+    "gpt-5.4-mini": {
+      "displayName": "gpt-5.4-mini",
+      "inputPerMTok": "0.75",
+      "outputPerMTok": "4.5",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-5.4-mini-2026-03-17": {
+      "displayName": "gpt-5.4-mini-2026-03-17",
+      "inputPerMTok": "0.75",
+      "outputPerMTok": "4.5",
+      "cacheReadPerMTok": "0.075"
+    },
+    "gpt-5.4-nano": {
+      "displayName": "gpt-5.4-nano",
+      "inputPerMTok": "0.2",
+      "outputPerMTok": "1.25",
+      "cacheReadPerMTok": "0.02"
+    },
+    "gpt-5.4-nano-2026-03-17": {
+      "displayName": "gpt-5.4-nano-2026-03-17",
+      "inputPerMTok": "0.2",
+      "outputPerMTok": "1.25",
+      "cacheReadPerMTok": "0.02"
+    },
+    "gpt-5.4-pro": {
+      "displayName": "gpt-5.4-pro",
+      "inputPerMTok": "30",
+      "outputPerMTok": "180",
+      "cacheReadPerMTok": "3"
+    },
+    "gpt-5.4-pro-2026-03-05": {
+      "displayName": "gpt-5.4-pro-2026-03-05",
+      "inputPerMTok": "30",
+      "outputPerMTok": "180",
+      "cacheReadPerMTok": "3"
+    },
+    "gpt-5.5": {
+      "displayName": "gpt-5.5",
+      "inputPerMTok": "5",
+      "outputPerMTok": "30",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-5.5-2026-04-23": {
+      "displayName": "gpt-5.5-2026-04-23",
+      "inputPerMTok": "5",
+      "outputPerMTok": "30",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-5.5-pro": {
+      "displayName": "gpt-5.5-pro",
+      "inputPerMTok": "30",
+      "outputPerMTok": "180",
+      "cacheReadPerMTok": "3"
+    },
+    "gpt-5.5-pro-2026-04-23": {
+      "displayName": "gpt-5.5-pro-2026-04-23",
+      "inputPerMTok": "30",
+      "outputPerMTok": "180",
+      "cacheReadPerMTok": "3"
+    },
+    "gpt-5.6": {
+      "displayName": "gpt-5.6",
+      "inputPerMTok": "5",
+      "outputPerMTok": "30",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-5.6-luna": {
+      "displayName": "gpt-5.6-luna",
+      "inputPerMTok": "1",
+      "outputPerMTok": "6",
+      "cacheWritePerMTok": "1.25",
+      "cacheReadPerMTok": "0.1"
+    },
+    "gpt-5.6-sol": {
+      "displayName": "gpt-5.6-sol",
+      "inputPerMTok": "5",
+      "outputPerMTok": "30",
+      "cacheWritePerMTok": "6.25",
+      "cacheReadPerMTok": "0.5"
+    },
+    "gpt-5.6-terra": {
+      "displayName": "gpt-5.6-terra",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "15",
+      "cacheWritePerMTok": "3.125",
+      "cacheReadPerMTok": "0.25"
+    },
+    "gpt-audio": {
+      "displayName": "gpt-audio",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-audio-1.5": {
+      "displayName": "gpt-audio-1.5",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-audio-2025-08-28": {
+      "displayName": "gpt-audio-2025-08-28",
+      "inputPerMTok": "2.5",
+      "outputPerMTok": "10"
+    },
+    "gpt-audio-mini": {
+      "displayName": "gpt-audio-mini",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4"
+    },
+    "gpt-audio-mini-2025-10-06": {
+      "displayName": "gpt-audio-mini-2025-10-06",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4"
+    },
+    "gpt-audio-mini-2025-12-15": {
+      "displayName": "gpt-audio-mini-2025-12-15",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4"
+    },
+    "gpt-realtime": {
+      "displayName": "gpt-realtime",
+      "inputPerMTok": "4",
+      "outputPerMTok": "16",
+      "cacheReadPerMTok": "0.4"
+    },
+    "gpt-realtime-1.5": {
+      "displayName": "gpt-realtime-1.5",
+      "inputPerMTok": "4",
+      "outputPerMTok": "16",
+      "cacheReadPerMTok": "0.4"
+    },
+    "gpt-realtime-2": {
+      "displayName": "gpt-realtime-2",
+      "inputPerMTok": "4",
+      "outputPerMTok": "16",
+      "cacheReadPerMTok": "0.4"
+    },
+    "gpt-realtime-2.1": {
+      "displayName": "gpt-realtime-2.1",
+      "inputPerMTok": "4",
+      "outputPerMTok": "24",
+      "cacheReadPerMTok": "0.4"
+    },
+    "gpt-realtime-2.1-mini": {
+      "displayName": "gpt-realtime-2.1-mini",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4",
+      "cacheReadPerMTok": "0.06"
+    },
+    "gpt-realtime-2025-08-28": {
+      "displayName": "gpt-realtime-2025-08-28",
+      "inputPerMTok": "4",
+      "outputPerMTok": "16",
+      "cacheReadPerMTok": "0.4"
+    },
+    "gpt-realtime-mini": {
+      "displayName": "gpt-realtime-mini",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4"
+    },
+    "gpt-realtime-mini-2025-10-06": {
+      "displayName": "gpt-realtime-mini-2025-10-06",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4",
+      "cacheReadPerMTok": "0.06"
+    },
+    "gpt-realtime-mini-2025-12-15": {
+      "displayName": "gpt-realtime-mini-2025-12-15",
+      "inputPerMTok": "0.6",
+      "outputPerMTok": "2.4",
+      "cacheReadPerMTok": "0.06"
+    },
+    "o1": {
+      "displayName": "o1",
+      "inputPerMTok": "15",
+      "outputPerMTok": "60",
+      "cacheReadPerMTok": "7.5"
+    },
+    "o1-2024-12-17": {
+      "displayName": "o1-2024-12-17",
+      "inputPerMTok": "15",
+      "outputPerMTok": "60",
+      "cacheReadPerMTok": "7.5"
+    },
+    "o1-pro": {
+      "displayName": "o1-pro",
+      "inputPerMTok": "150",
+      "outputPerMTok": "600"
+    },
+    "o1-pro-2025-03-19": {
+      "displayName": "o1-pro-2025-03-19",
+      "inputPerMTok": "150",
+      "outputPerMTok": "600"
+    },
+    "o3": {
+      "displayName": "o3",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "o3-2025-04-16": {
+      "displayName": "o3-2025-04-16",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "o3-deep-research": {
+      "displayName": "o3-deep-research",
+      "inputPerMTok": "10",
+      "outputPerMTok": "40",
+      "cacheReadPerMTok": "2.5"
+    },
+    "o3-deep-research-2025-06-26": {
+      "displayName": "o3-deep-research-2025-06-26",
+      "inputPerMTok": "10",
+      "outputPerMTok": "40",
+      "cacheReadPerMTok": "2.5"
+    },
+    "o3-mini": {
+      "displayName": "o3-mini",
+      "inputPerMTok": "1.1",
+      "outputPerMTok": "4.4",
+      "cacheReadPerMTok": "0.55"
+    },
+    "o3-mini-2025-01-31": {
+      "displayName": "o3-mini-2025-01-31",
+      "inputPerMTok": "1.1",
+      "outputPerMTok": "4.4",
+      "cacheReadPerMTok": "0.55"
+    },
+    "o3-pro": {
+      "displayName": "o3-pro",
+      "inputPerMTok": "20",
+      "outputPerMTok": "80"
+    },
+    "o3-pro-2025-06-10": {
+      "displayName": "o3-pro-2025-06-10",
+      "inputPerMTok": "20",
+      "outputPerMTok": "80"
+    },
+    "o4-mini": {
+      "displayName": "o4-mini",
+      "inputPerMTok": "1.1",
+      "outputPerMTok": "4.4",
+      "cacheReadPerMTok": "0.275"
+    },
+    "o4-mini-2025-04-16": {
+      "displayName": "o4-mini-2025-04-16",
+      "inputPerMTok": "1.1",
+      "outputPerMTok": "4.4",
+      "cacheReadPerMTok": "0.275"
+    },
+    "o4-mini-deep-research": {
+      "displayName": "o4-mini-deep-research",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "o4-mini-deep-research-2025-06-26": {
+      "displayName": "o4-mini-deep-research-2025-06-26",
+      "inputPerMTok": "2",
+      "outputPerMTok": "8",
+      "cacheReadPerMTok": "0.5"
+    },
+    "qwen-coder": {
+      "displayName": "qwen-coder",
+      "inputPerMTok": "0.3",
+      "outputPerMTok": "1.5"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "name": "vibebill",
+  "version": "0.2.0",
+  "description": "Local, zero-config, git-native cost accountant for AI-assisted repositories. Parses real agent session logs, joins token usage to git history, and answers: what did this commit cost?",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "vibebill": "dist/src/cli/index.js"
+  },
+  "main": "dist/src/cli/index.js",
+  "files": [
+    "dist",
+    "prices",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test scripts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "npm run build && node dist/scripts/bench.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "cost",
+    "claude-code",
+    "codex",
+    "gemini-cli",
+    "aider",
+    "git",
+    "tokens",
+    "accounting"
+  ],
+  "dependencies": {
+    "commander": "^14.0.0",
+    "picocolors": "^1.1.1",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "eslint": "^9.30.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.35.0",
+    "vitest": "^3.2.0"
+  }
+}
