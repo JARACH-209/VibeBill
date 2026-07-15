@@ -68,7 +68,47 @@ Shared rules (spec §14.2/§14.3):
 - No per-call message id ⇒ dedupe id fallback: `sessionId + ":" + timestamp + ":" + hash`.
 - `SCHEMA_VERIFIED = true`.
 
-### Gemini CLI / aider — research in flight; adapters ship `SCHEMA_VERIFIED = false`.
+### Gemini CLI (`~/.gemini/tmp/<slug>/chats/*.jsonl`) — source-verified (gemini-cli v0.50, chatRecordingService.ts); no local samples ⇒ `SCHEMA_VERIFIED = false`
+- Discover: `<root>/tmp/*/chats/**/*.jsonl` AND legacy `**/*.json` (pre-2026-04 single-doc
+  format: `{sessionId, projectHash, startTime, messages: [...]}` — same message schema).
+  Root: `opts.geminiDir ?? $VIBEBILL_GEMINI_DIR ?? ~/.gemini`. Subagent sessions are nested
+  `chats/<parentSessionId>/<sessionId>.jsonl` ⇒ `isSidechain: true`.
+- JSONL records: line 1 metadata `{sessionId, projectHash, startTime, kind, ...}`; then
+  message records `{id, timestamp (ISO), type: "user"|"gemini"|"info"|..., model?, tokens?,
+  toolCalls?}`; patch records `{"$set": {...}}` (a `$set.messages` array REPLACES history —
+  its members are full message records, same ids); `{"$rewindTo": id}` markers.
+- UsageEvent per `type=="gemini"` record with a `tokens` object:
+  `tokens: { input, output, cached, thoughts, tool, total }` where **input INCLUDES
+  cached** and **thoughts (reasoning) are separate from output**. Map:
+  input = max(0, input − cached), cacheRead = cached, cacheWrite = 0,
+  output = output + thoughts (thoughts are billed as output tokens).
+- Emit events for message records seen anywhere (direct appends AND inside `$set.messages`);
+  duplicates share `id` — dedupe key `sessionId + ":" + message.id`, ingest keeps last.
+  IGNORE `$rewindTo` for accounting (rewound calls still consumed tokens).
+- editedFiles: `toolCalls[]` where `name ∈ {"replace", "write_file"}` → `args.file_path`
+  ONLY (args also hold old_string/new_string/content — NEVER read those; privacy).
+- cwd: read sibling marker file `<tmp>/<slug>/.project_root` (plain-text absolute project
+  path); fallback `<root>/projects.json` (`{projects: {absPath: slug}}`) reverse lookup;
+  else null. gitBranch: null (not recorded).
+
+### aider (`<repo>/.aider.chat.history.md`) — source-verified (aider v0.86 base_coder.py/io.py); `SCHEMA_VERIFIED = false`
+- Single markdown file at repo root; `createAiderAdapter({ repoRoot })`.
+- Session boundary: `^# aider chat started at YYYY-MM-DD HH:MM:SS` (LOCAL time, no zone —
+  parse as machine-local; documented limitation). sessionId synthesized:
+  `aider:<startTs-ms>` (deterministic). All events in a session use the session-start ts
+  (aider records no per-message timestamps; documented limitation).
+- Model: latest `^> (?:Main model|Model): (.+?) with .+ edit format` line (model string is
+  group 1; may be `provider/model` form).
+- Usage per `Tokens: ... sent[, X cache write][, Y cache hit], Z received.` line (usually
+  `> `-prefixed; the `Cost: ...` clause may follow on the SAME line or the NEXT line
+  without `> ` prefix — tolerate both; we ignore aider's own cost figures and price tokens
+  ourselves). Number format: `999` exact, `4.2k` = 4200, `12k` = 12000 (lossy ~2 sig figs —
+  doctor must surface the precision caveat). Map: cacheWrite = cache write,
+  cacheRead = cache hit, input = max(0, sent − cacheWrite − cacheRead), output = received.
+- editedFiles: `^> Applied edit to (.+)$` lines — repo-relative → resolve against repoRoot;
+  attach to the PREVIOUS usage event of the session (edits print after their message's
+  usage line); edits seen before any usage line attach to the session's first usage event.
+- isSidechain always false; gitBranch null; cwd = repoRoot.
 
 ## Module contracts
 
