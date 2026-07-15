@@ -95,7 +95,8 @@ Shared rules (spec §14.2/§14.3):
 - Single markdown file at repo root; `createAiderAdapter({ repoRoot })`.
 - Session boundary: `^# aider chat started at YYYY-MM-DD HH:MM:SS` (LOCAL time, no zone —
   parse as machine-local; documented limitation). sessionId synthesized:
-  `aider:<startTs-ms>` (deterministic). All events in a session use the session-start ts
+  `aider:<startTs-ms>:<file-ordinal>` (deterministic; the ordinal keeps sessions with
+  identical header timestamps distinct). All events in a session use the session-start ts
   (aider records no per-message timestamps; documented limitation).
 - Model: latest `^> (?:Main model|Model): (.+?) with .+ edit format` line (model string is
   group 1; may be `provider/model` form).
