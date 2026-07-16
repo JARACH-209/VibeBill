@@ -35,8 +35,12 @@ export function createClaudeCodeAdapter(opts?: { claudeDir?: string }): SourceAd
     id: 'claude-code',
     schemaVerified: CLAUDE_CODE_SCHEMA_VERIFIED,
 
-    // Sorted `projects/*/*.jsonl` paths; a missing or unreadable root is not an
-    // error — it simply means no transcripts (degrade honestly, spec §1.6).
+    // Sorted `projects/**/*.jsonl` paths — RECURSIVE below each project dir:
+    // newer Claude Code versions nest subagent/workflow transcripts in
+    // `<session>/subagents/**` subdirectories (verified on this machine;
+    // decisions.md D12), and those carry real usage with the same record
+    // format. A missing or unreadable root is not an error — it simply means
+    // no transcripts (degrade honestly, spec §1.6).
     async discover(): Promise<string[]> {
       let projectEntries;
       try {
@@ -45,21 +49,25 @@ export function createClaudeCodeAdapter(opts?: { claudeDir?: string }): SourceAd
         return [];
       }
       const files: string[] = [];
-      for (const project of projectEntries) {
-        if (!project.isDirectory()) {
-          continue;
-        }
-        const projectPath = join(projectsDir, project.name);
-        let sessionEntries;
+      const walk = async (dir: string): Promise<void> => {
+        let entries;
         try {
-          sessionEntries = await readdir(projectPath, { withFileTypes: true });
+          entries = await readdir(dir, { withFileTypes: true });
         } catch {
-          continue; // project dir vanished or unreadable: skip it, never throw
+          return; // dir vanished or unreadable: skip it, never throw
         }
-        for (const session of sessionEntries) {
-          if (session.isFile() && session.name.endsWith('.jsonl')) {
-            files.push(join(projectPath, session.name));
+        for (const entry of entries) {
+          const p = join(dir, entry.name);
+          if (entry.isDirectory()) {
+            await walk(p);
+          } else if (entry.isFile() && entry.name.endsWith('.jsonl')) {
+            files.push(p);
           }
+        }
+      };
+      for (const project of projectEntries) {
+        if (project.isDirectory()) {
+          await walk(join(projectsDir, project.name));
         }
       }
       return files.sort();

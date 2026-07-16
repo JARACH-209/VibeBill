@@ -108,3 +108,13 @@ event with its session-start timestamp, ignores aider's own `Cost:` figures (vib
 prices tokens from its own table), and exports `AIDER_PRECISION_NOTE` which `doctor`
 prints. The file is stateful markdown, so `parseFile` always re-parses from byte 0;
 stable event ids make ingest's last-wins dedupe absorb the re-emission.
+
+## D12 (2026-07-16) — claude-code discovery is recursive under project dirs
+
+The spec's §5.1 layout (`projects/<encoded-dir>/<session-uuid>.jsonl`, flat) predates
+Claude Code's workflow/subagent features: on this machine, 28 transcript files (7.7 MB of
+real usage, same record format, proper `cwd` and `isSidechain: true`) live nested under
+`<project>/<session>/subagents/**`. Flat discovery silently dropped that spend — the
+commits it produced showed as `$0.00 ·human?`, violating "measured, never guessed" in the
+other direction. `discover()` now walks each project directory recursively for `*.jsonl`;
+dedupe-by-id makes any overlap with flat files harmless.
