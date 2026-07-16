@@ -680,6 +680,12 @@ async function main(): Promise<void> {
     console.log('  † warm peak RSS includes memory retained from the cold phase (same process)');
     console.log(`  process RSS baseline before cold ingest: ${mibOf(cold.baselineRssBytes)} MiB`);
     console.log(
+      '  note: peak RSS reflects V8’s default grow-lazily heap policy, not the live set —',
+    );
+    console.log(
+      '  the same ingest meets the §9 ceiling under a constrained heap (docs/decisions.md D13)',
+    );
+    console.log(
       `  in-scope deduped events: ${num(cold.result.events.length)} (cold == warm: ${String(
         warm.result.events.length === cold.result.events.length,
       )})`,

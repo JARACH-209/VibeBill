@@ -8,7 +8,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream } from 'node:fs';
 
 import type { FileParseStats, TokenCounts, UsageEvent } from '../../core/types.js';
-import { assistantRecordSchema, envelopeSchema, toolUseBlockSchema } from './schema.js';
+import { assistantRecordSchema } from './schema.js';
 import type { RawUsage } from './schema.js';
 
 /** Hard per-line byte cap (spec §7.13): longer lines are skipped, never buffered whole. */
@@ -83,20 +83,37 @@ function extractTokens(usage: RawUsage): TokenCounts {
   return top; // genuinely zero usage
 }
 
-/** Unique file paths from Edit/Write/MultiEdit/NotebookEdit tool_use blocks, in order. */
+/**
+ * Unique file paths from Edit/Write/MultiEdit/NotebookEdit tool_use blocks, in
+ * order. Plain property narrowing instead of zod here: block inputs carry the
+ * edit BODIES (old_string/new_string, whole file contents) and a passthrough
+ * schema would deep-clone them per block — pure allocation churn on the hot
+ * path (spec §9), and we must never even touch that text (spec §14.3.2). Only
+ * `type`, `name` and the two path fields are read.
+ */
 function extractEditedFiles(content: unknown): string[] {
   if (!Array.isArray(content)) {
     return [];
   }
   const seen = new Set<string>();
   for (const block of content) {
-    const parsed = toolUseBlockSchema.safeParse(block);
-    if (!parsed.success || !EDIT_TOOL_NAMES.has(parsed.data.name)) {
-      continue;
-    }
-    const input = parsed.data.input;
-    const path = input?.file_path ?? input?.notebook_path;
-    if (path !== undefined && path.length > 0) {
+    if (typeof block !== 'object' || block === null) continue;
+    const b = block as Record<string, unknown>;
+    if (b['type'] !== 'tool_use') continue;
+    const name = b['name'];
+    if (typeof name !== 'string' || !EDIT_TOOL_NAMES.has(name)) continue;
+    const input = b['input'];
+    if (typeof input !== 'object' || input === null) continue;
+    const i = input as Record<string, unknown>;
+    const filePath = i['file_path'];
+    const notebookPath = i['notebook_path'];
+    const path =
+      typeof filePath === 'string' && filePath.length > 0
+        ? filePath
+        : typeof notebookPath === 'string' && notebookPath.length > 0
+          ? notebookPath
+          : undefined;
+    if (path !== undefined) {
       seen.add(path);
     }
   }
@@ -129,15 +146,42 @@ export function eventFromLine(line: string, sourceFile: string): LineOutcome {
   } catch {
     return MALFORMED;
   }
-  const envelope = envelopeSchema.safeParse(json);
-  if (!envelope.success) {
+  // Envelope discriminator via plain narrowing: a passthrough zod parse here
+  // would deep-clone EVERY record (including multi-KB content on the majority
+  // of lines) just to read one string — pure GC churn at 100s-of-MB scale
+  // (spec §9). Semantics match envelopeSchema: object with a string `type`.
+  if (typeof json !== 'object' || json === null || Array.isArray(json)) {
     return MALFORMED;
   }
-  if (envelope.data.type !== 'assistant') {
+  const raw = json as Record<string, unknown>;
+  if (typeof raw['type'] !== 'string') {
+    return MALFORMED;
+  }
+  if (raw['type'] !== 'assistant') {
     return IGNORED; // user/attachment/ai-title/… — not usage-bearing, not an error
   }
 
-  const parsed = assistantRecordSchema.safeParse(json);
+  // Validate a PROJECTION of only the fields we use: zod still guards every
+  // value we read, but the untouched `content` body is never cloned. The raw
+  // content reference goes straight to extractEditedFiles (paths only).
+  const rawMessage = raw['message'];
+  let messageProjection: unknown = rawMessage;
+  let rawContent: unknown;
+  if (typeof rawMessage === 'object' && rawMessage !== null && !Array.isArray(rawMessage)) {
+    const m = rawMessage as Record<string, unknown>;
+    rawContent = m['content'];
+    messageProjection = { id: m['id'], model: m['model'], usage: m['usage'] };
+  }
+  const parsed = assistantRecordSchema.safeParse({
+    type: raw['type'],
+    sessionId: raw['sessionId'],
+    timestamp: raw['timestamp'],
+    cwd: raw['cwd'],
+    gitBranch: raw['gitBranch'],
+    isSidechain: raw['isSidechain'],
+    requestId: raw['requestId'],
+    message: messageProjection,
+  });
   if (!parsed.success) {
     return MALFORMED;
   }
@@ -171,7 +215,7 @@ export function eventFromLine(line: string, sourceFile: string): LineOutcome {
       tokens: extractTokens(message.usage),
       cwd: rec.cwd ?? null,
       gitBranch: rec.gitBranch ?? null,
-      editedFiles: extractEditedFiles(message.content),
+      editedFiles: extractEditedFiles(rawContent),
       isSidechain: rec.isSidechain ?? false,
       sourceFile,
     },

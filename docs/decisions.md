@@ -118,3 +118,22 @@ real usage, same record format, proper `cwd` and `isSidechain: true`) live neste
 commits it produced showed as `$0.00 ·human?`, violating "measured, never guessed" in the
 other direction. `discover()` now walks each project directory recursively for `*.jsonl`;
 dedupe-by-id makes any overlap with flat files harmless.
+
+## D13 (2026-07-16) — spec §9 RSS ceiling: streaming holds; default V8 policy overshoots
+
+Measured on the 500 MiB synthetic corpus (Node 25, macOS, compiled dist, clean subprocess,
+`/usr/bin/time -l` true peak):
+
+- cold ingest, default heap policy: 2.13 s, peak RSS 385 MiB — **over** the 300 MiB target;
+- cold ingest, `--max-old-space-size=160 --max-semi-space-size=8`: 2.29 s (+7%), peak RSS
+  **211 MiB** — comfortably under;
+- warm run from cache: 0.66 s.
+
+The constrained-heap run proves the implementation is genuinely streaming (no O(file)
+buffering; live set ≈ 100 MiB for 138k retained events): the default-policy overshoot is
+V8 choosing to trade memory for fewer GC pauses at our ~400 MiB/s parse rate, not memory
+the program needs. Work done to get here: streaming cache write/read with incremental
+sha256, per-run string interning, and replacing whole-record zod `.passthrough()` parses
+(which deep-clone multi-KB content bodies) with validated field projections. vibebill does
+not force V8 flags on users (NODE_OPTIONS is theirs); S10 enforces the ceiling at CI scale
+and the bench prints the policy caveat next to its numbers.
