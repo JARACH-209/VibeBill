@@ -3,3 +3,4 @@ dist/
 .vibebill/
 coverage/
 *.tsbuildinfo
+.vibebill/
