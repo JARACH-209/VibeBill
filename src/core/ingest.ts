@@ -63,6 +63,35 @@ function compareStrings(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
+/**
+ * Per-run string intern pool. Every event carries its own copies of highly
+ * repetitive strings (sourceFile, cwd, model, sessionId, edited paths) fresh
+ * from JSON parsing; collapsing them to shared instances keeps RSS bounded on
+ * multi-hundred-MB corpora (spec §9) without changing any value.
+ */
+function makeInterner(): (s: string) => string {
+  const pool = new Map<string, string>();
+  return (s: string): string => {
+    const hit = pool.get(s);
+    if (hit !== undefined) return hit;
+    pool.set(s, s);
+    return s;
+  };
+}
+
+/** Intern an event's repetitive string fields in place (id stays unique). */
+function internEventStrings(e: UsageEvent, intern: (s: string) => string): UsageEvent {
+  e.sessionId = intern(e.sessionId);
+  e.model = intern(e.model);
+  if (e.cwd !== null) e.cwd = intern(e.cwd);
+  if (e.gitBranch !== null) e.gitBranch = intern(e.gitBranch);
+  e.sourceFile = intern(e.sourceFile);
+  for (let i = 0; i < e.editedFiles.length; i++) {
+    e.editedFiles[i] = intern(e.editedFiles[i] as string);
+  }
+  return e;
+}
+
 /** realpath when the path exists; plain resolution otherwise (best evidence we have). */
 async function realpathOrResolve(p: string): Promise<string> {
   try {
@@ -178,6 +207,7 @@ export async function ingestEvents(opts: {
   const manifestFiles: Record<string, CachedFileEntry> = {};
   /** Pre-dedupe in-scope events: files sorted by path, events in file order. */
   const rawInScope: UsageEvent[] = [];
+  const intern = makeInterner();
 
   for (const [filePath, adapter] of sortedFiles) {
     let stat;
@@ -258,7 +288,7 @@ export async function ingestEvents(opts: {
     stats.linesSkipped += entry.stats.linesSkipped;
     outOfScope.events += entry.outOfScope.events;
     outOfScope.tokens += entry.outOfScope.tokens;
-    for (const event of fileEvents) rawInScope.push(event);
+    for (const event of fileEvents) rawInScope.push(internEventStrings(event, intern));
   }
 
   // Dedupe across ALL files by event id, LAST occurrence winning in the

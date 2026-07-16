@@ -31,8 +31,10 @@
  */
 
 import { createHash } from 'node:crypto';
+import { createReadStream } from 'node:fs';
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
+import { StringDecoder } from 'node:string_decoder';
 import { z } from 'zod';
 import type { AgentId, UsageEvent } from '../core/types.js';
 
@@ -161,21 +163,50 @@ export function computeDedupeIndexHash(ndjsonText: string): string {
   return createHash('sha256').update(ndjsonText, 'utf8').digest('hex');
 }
 
+/** Flush threshold for the buffered streaming cache write. */
+const WRITE_CHUNK_CHARS = 256 * 1024;
+
 /**
  * Write the cache: events.ndjson first, then manifest.json carrying the
  * checksum of what was just written. A crash between the two writes leaves a
  * manifest whose checksum does not match the ndjson, which `readCache`
  * detects and treats as corrupt (silent full rebuild) — never wrong data.
+ *
+ * The events file is written in buffered chunks with the checksum computed
+ * incrementally: materializing the whole ndjson (tens of MB on large corpora)
+ * would blow the spec §9 RSS ceiling. Content is byte-identical to the
+ * previous whole-string implementation.
  */
 export async function writeCache(
   cacheDir: string,
   manifest: Omit<CacheManifest, 'dedupeIndexHash'>,
   eventsInOrder: readonly UsageEvent[],
 ): Promise<void> {
-  const ndjson = eventsInOrder.map((e) => serializeEvent(e) + '\n').join('');
-  const full: CacheManifest = { ...manifest, dedupeIndexHash: computeDedupeIndexHash(ndjson) };
   await fs.mkdir(cacheDir, { recursive: true });
-  await fs.writeFile(path.join(cacheDir, EVENTS_FILENAME), ndjson, 'utf8');
+  const hash = createHash('sha256');
+  const handle = await fs.open(path.join(cacheDir, EVENTS_FILENAME), 'w');
+  try {
+    let buffered: string[] = [];
+    let bufferedChars = 0;
+    const flush = async (): Promise<void> => {
+      if (bufferedChars === 0) return;
+      const chunk = buffered.join('');
+      buffered = [];
+      bufferedChars = 0;
+      hash.update(chunk, 'utf8');
+      await handle.write(chunk, null, 'utf8');
+    };
+    for (const event of eventsInOrder) {
+      const line = serializeEvent(event) + '\n';
+      buffered.push(line);
+      bufferedChars += line.length;
+      if (bufferedChars >= WRITE_CHUNK_CHARS) await flush();
+    }
+    await flush();
+  } finally {
+    await handle.close();
+  }
+  const full: CacheManifest = { ...manifest, dedupeIndexHash: hash.digest('hex') };
   await fs.writeFile(
     path.join(cacheDir, MANIFEST_FILENAME),
     JSON.stringify(full, null, 2) + '\n',
@@ -203,35 +234,53 @@ export async function readCache(cacheDir: string): Promise<LoadedCache | null> {
   const parsed = manifestSchema.safeParse(manifestJson);
   if (!parsed.success) return null;
 
-  // A missing events file is only valid when the manifest was written for
-  // zero cached events (checksum of the empty string); otherwise it mismatches.
-  let ndjson = '';
-  try {
-    ndjson = await fs.readFile(path.join(cacheDir, EVENTS_FILENAME), 'utf8');
-  } catch {
-    ndjson = '';
-  }
-  if (computeDedupeIndexHash(ndjson) !== parsed.data.dedupeIndexHash) return null;
-
+  // Stream the events file line-by-line, hashing raw bytes incrementally —
+  // never the whole file as one string (spec §9 RSS ceiling). A missing
+  // events file is only valid when the manifest was written for zero cached
+  // events (checksum of the empty string); otherwise the hash mismatches.
   const eventsByFile = new Map<string, UsageEvent[]>();
-  for (const line of ndjson.split('\n')) {
-    if (line === '') continue;
+  const hash = createHash('sha256');
+  const acceptLine = (line: string): boolean => {
+    if (line === '') return true;
     let lineJson: unknown;
     try {
       lineJson = JSON.parse(line);
     } catch {
-      return null;
+      return false;
     }
     const event = cachedEventSchema.safeParse(lineJson);
-    if (!event.success) return null;
+    if (!event.success) return false;
     // Every cached event must belong to a file the manifest knows about.
     if (!Object.prototype.hasOwnProperty.call(parsed.data.files, event.data.sourceFile)) {
-      return null;
+      return false;
     }
     const list = eventsByFile.get(event.data.sourceFile);
     if (list === undefined) eventsByFile.set(event.data.sourceFile, [event.data]);
     else list.push(event.data);
+    return true;
+  };
+  try {
+    const decoder = new StringDecoder('utf8');
+    let carry = '';
+    const stream = createReadStream(path.join(cacheDir, EVENTS_FILENAME));
+    for await (const chunk of stream) {
+      const buf = chunk as Buffer;
+      hash.update(buf);
+      carry += decoder.write(buf);
+      let nl = carry.indexOf('\n');
+      while (nl !== -1) {
+        if (!acceptLine(carry.slice(0, nl))) return null;
+        carry = carry.slice(nl + 1);
+        nl = carry.indexOf('\n');
+      }
+    }
+    carry += decoder.end();
+    if (carry !== '' && !acceptLine(carry)) return null;
+  } catch {
+    // Unreadable events file: fall through with whatever was hashed so far —
+    // an absent file hashes as empty, matching only a zero-event manifest.
   }
+  if (hash.digest('hex') !== parsed.data.dedupeIndexHash) return null;
 
   const manifest: CacheManifest = {
     schemaVersion: parsed.data.schemaVersion,
