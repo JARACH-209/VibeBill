@@ -137,3 +137,14 @@ sha256, per-run string interning, and replacing whole-record zod `.passthrough()
 (which deep-clone multi-KB content bodies) with validated field projections. vibebill does
 not force V8 flags on users (NODE_OPTIONS is theirs); S10 enforces the ceiling at CI scale
 and the bench prints the policy caveat next to its numbers.
+
+## D14 (2026-07-17) — token counts validated as safe non-negative integers
+
+Found in the final audit: adapter schemas accepted any `z.number()` for token counts, so a
+single corrupt line with a fractional count (e.g. `"input_tokens": 3.5`) would pass
+validation and later crash the CLI at the BigInt pricing boundary — violating §14.3.5 —
+and a negative count would corrupt conservation sums. All JSONL adapters now bound token
+counts to safe non-negative integers (`.int().nonnegative().max(2^53−1)`, matching §4's
+"safe < 2^53"); a record carrying an out-of-bounds count is malformed (skipped + counted),
+never an event. aider was already safe (regex-gated integer scaling). Adapter versions
+bumped to '2' so pre-fix caches invalidate.

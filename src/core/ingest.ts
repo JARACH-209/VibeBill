@@ -35,9 +35,9 @@ export const INGEST_SCHEMA_VERSION = 1;
  * by the older parser.
  */
 export const ADAPTER_VERSIONS: Record<AgentId, string> = {
-  'claude-code': '1',
-  codex: '1',
-  'gemini-cli': '1',
+  'claude-code': '2', // 2: token counts bounded to safe non-negative integers
+  codex: '2', // 2: token counts bounded to safe non-negative integers
+  'gemini-cli': '2', // 2: token counts bounded to safe non-negative integers
   aider: '1',
 };
 

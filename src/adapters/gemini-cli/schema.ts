@@ -18,15 +18,22 @@ export const metadataSchema = z
   })
   .passthrough();
 
+/**
+ * A token count must be a safe non-negative integer: fractional values would
+ * throw at the BigInt pricing boundary and negatives would corrupt the
+ * conservation sums, so a record carrying either is malformed (spec §14.3.5).
+ */
+const tokenCount = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+
 /** Per-call token counts; `input` INCLUDES `cached` and `thoughts` are separate from `output`. */
 export const geminiTokensSchema = z
   .object({
-    input: z.number().optional(),
-    output: z.number().optional(),
-    cached: z.number().optional(),
-    thoughts: z.number().optional(),
-    tool: z.number().optional(),
-    total: z.number().optional(),
+    input: tokenCount.optional(),
+    output: tokenCount.optional(),
+    cached: tokenCount.optional(),
+    thoughts: tokenCount.optional(),
+    tool: tokenCount.optional(),
+    total: tokenCount.optional(),
   })
   .passthrough();
 

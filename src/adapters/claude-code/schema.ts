@@ -9,13 +9,21 @@ import { z } from 'zod';
 /** Loosest line envelope: any JSON object carrying a string `type` discriminator. */
 export const envelopeSchema = z.object({ type: z.string() }).passthrough();
 
+/**
+ * A token count must be a safe non-negative integer: fractional values would
+ * throw at the BigInt pricing boundary and negatives would corrupt the
+ * conservation sums, so a record carrying either is malformed, not tolerated
+ * (spec §14.3.5, §4 "token counts are number, safe < 2^53").
+ */
+const tokenCount = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+
 /** One retry/fallback attempt inside `message.usage.iterations`. */
 export const iterationSchema = z
   .object({
-    input_tokens: z.number().optional(),
-    output_tokens: z.number().optional(),
-    cache_creation_input_tokens: z.number().optional(),
-    cache_read_input_tokens: z.number().optional(),
+    input_tokens: tokenCount.optional(),
+    output_tokens: tokenCount.optional(),
+    cache_creation_input_tokens: tokenCount.optional(),
+    cache_read_input_tokens: tokenCount.optional(),
     type: z.string().optional(),
   })
   .passthrough();
@@ -23,10 +31,10 @@ export const iterationSchema = z
 /** Per-call `message.usage` object; all counts optional and defaulted to 0 downstream. */
 export const usageSchema = z
   .object({
-    input_tokens: z.number().optional(),
-    output_tokens: z.number().optional(),
-    cache_creation_input_tokens: z.number().optional(),
-    cache_read_input_tokens: z.number().optional(),
+    input_tokens: tokenCount.optional(),
+    output_tokens: tokenCount.optional(),
+    cache_creation_input_tokens: tokenCount.optional(),
+    cache_read_input_tokens: tokenCount.optional(),
     iterations: z.array(iterationSchema).optional().nullable(),
   })
   .passthrough();

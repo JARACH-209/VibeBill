@@ -39,14 +39,21 @@ export const turnContextPayloadSchema = z
   })
   .passthrough();
 
+/**
+ * A token count must be a safe non-negative integer: fractional values would
+ * throw at the BigInt pricing boundary and negatives would corrupt the
+ * conservation sums, so a record carrying either is malformed (spec §14.3.5).
+ */
+const tokenCount = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+
 /** One raw usage object (`last_token_usage` / `total_token_usage`); counts default 0. */
 export const rawTokenUsageSchema = z
   .object({
-    input_tokens: z.number().default(0),
-    cached_input_tokens: z.number().default(0),
-    output_tokens: z.number().default(0),
-    reasoning_output_tokens: z.number().optional().nullable(),
-    total_tokens: z.number().optional().nullable(),
+    input_tokens: tokenCount.default(0),
+    cached_input_tokens: tokenCount.default(0),
+    output_tokens: tokenCount.default(0),
+    reasoning_output_tokens: tokenCount.optional().nullable(),
+    total_tokens: tokenCount.optional().nullable(),
   })
   .passthrough();
 
