@@ -1,0 +1,165 @@
+# vibebill — PR cost comment (v0.2)
+#
+# HONEST DESIGN CONSTRAINT, stated up front: CI runners have no local agent
+# transcripts — the session logs vibebill measures live on developers'
+# machines. This workflow therefore does NOT measure anything. It only relays
+# per-commit cost numbers that a developer measured locally and published as
+# git notes:
+#
+#     vibebill notes sync                     # writes refs/notes/vibebill locally
+#     git push origin refs/notes/vibebill     # publishes them
+#
+# What it does on each pull_request event:
+#   1. fetches refs/notes/vibebill (which may not exist yet);
+#   2. reads the vibebill note JSON for every PR commit
+#      (git notes --ref=vibebill show <sha>);
+#   3. sums costNanoUsd with BigInt integer math — no floats anywhere near money;
+#   4. formats a markdown cost table (commits without a note listed as
+#      unmeasured) tagged with the <!-- vibebill-cost --> marker;
+#   5. creates or updates the single marker comment via `gh api` (GITHUB_TOKEN).
+#
+# If NO commit in the PR has a note, the job exits successfully without
+# posting anything. On pull requests from forks GITHUB_TOKEN is read-only and
+# the comment cannot be posted; the job warns instead of failing.
+
+name: vibebill PR comment
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: vibebill-pr-comment-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  cost-comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: we enumerate base..head and resolve notes by hash.
+          fetch-depth: 0
+
+      - name: Fetch vibebill notes (absent until someone pushes them)
+        run: |
+          git fetch origin '+refs/notes/vibebill:refs/notes/vibebill' \
+            || echo "no refs/notes/vibebill on origin yet — nothing to report"
+
+      - name: Build the cost comment from git notes
+        id: build
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          node <<'SCRIPT'
+          // Consumes developer-measured git notes; measures nothing itself.
+          // Money stays integer (BigInt nano-USD) until the final formatting.
+          const { execFileSync } = require('node:child_process');
+          const { appendFileSync, writeFileSync } = require('node:fs');
+
+          const git = (...args) => {
+            try {
+              // stderr ignored: "no note found" is the normal unmeasured case.
+              return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+            } catch {
+              return null; // missing note / unreachable sha — handled by callers
+            }
+          };
+
+          // nano-USD -> "$d,ddd.cc", round-half-even to cents (matches vibebill).
+          const usd = (nano) => {
+            const scale = 10_000_000n; // nano-USD per cent
+            let cents = nano / scale;
+            const rem = nano % scale;
+            if (rem * 2n > scale || (rem * 2n === scale && cents % 2n === 1n)) cents += 1n;
+            const dollars = (cents / 100n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            return `$${dollars}.${(cents % 100n).toString().padStart(2, '0')}`;
+          };
+
+          const shas = (git('rev-list', '--reverse', `${process.env.BASE_SHA}..${process.env.HEAD_SHA}`) ?? '')
+            .split('\n')
+            .filter(Boolean);
+
+          let total = 0n;
+          let totalTokens = 0n;
+          let measured = 0;
+          const rows = [];
+          for (const sha of shas) {
+            const subject = (git('log', '-1', '--format=%s', sha) ?? '').trim().replace(/\|/g, '\\|');
+            const note = git('notes', '--ref=vibebill', 'show', sha);
+            let parsed = null;
+            if (note !== null) {
+              try {
+                const j = JSON.parse(note);
+                if (j !== null && j.v === 1 && typeof j.costNanoUsd === 'string') parsed = j;
+              } catch {
+                // malformed note — treat the commit as unmeasured rather than fail
+              }
+            }
+            if (parsed === null) {
+              rows.push(`| — unmeasured | \`${sha.slice(0, 7)}\` | ${subject} |`);
+              continue;
+            }
+            const nano = BigInt(parsed.costNanoUsd);
+            total += nano;
+            if (parsed.tokens && Number.isInteger(parsed.tokens.total)) {
+              totalTokens += BigInt(parsed.tokens.total);
+            }
+            measured += 1;
+            rows.push(`| ${usd(nano)} | \`${sha.slice(0, 7)}\` | ${subject} |`);
+          }
+
+          if (measured === 0) {
+            // Design rule: no notes at all => succeed WITHOUT posting anything.
+            console.log(`no vibebill notes on any of the ${shas.length} PR commit(s); not posting a comment`);
+            appendFileSync(process.env.GITHUB_OUTPUT, 'post=false\n');
+            process.exit(0);
+          }
+
+          const body = [
+            '<!-- vibebill-cost -->',
+            `### vibebill — cost of PR #${process.env.PR_NUMBER}`,
+            '',
+            `**Total measured cost: ${usd(total)}** across ${measured} of ${shas.length} commit(s)` +
+              (totalTokens > 0n ? ` (${totalTokens.toLocaleString('en-US')} tokens)` : ''),
+            '',
+            '| cost | commit | subject |',
+            '|---:|---|---|',
+            ...rows,
+            '',
+            '_These numbers were measured locally from agent transcripts by the developers and',
+            'published as `refs/notes/vibebill` git notes; this workflow measures nothing itself.',
+            'To cover an unmeasured commit, its author runs `vibebill notes sync` and',
+            '`git push origin refs/notes/vibebill`._',
+          ].join('\n');
+
+          writeFileSync('vibebill-comment.md', body + '\n');
+          appendFileSync(process.env.GITHUB_OUTPUT, 'post=true\n');
+          console.log(`built comment: ${measured}/${shas.length} commits measured, total ${usd(total)}`);
+          SCRIPT
+
+      - name: Create or update the marker comment
+        if: steps.build.outputs.post == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          existing=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate \
+            --jq '[.[] | select(.body | contains("<!-- vibebill-cost -->"))][0].id // empty')
+          if [ -n "$existing" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$existing" \
+              --field body=@vibebill-comment.md \
+              && echo "updated comment $existing" \
+              || echo "::warning::could not update the vibebill comment (read-only GITHUB_TOKEN on fork PRs)"
+          else
+            gh api --method POST "repos/$REPO/issues/$PR_NUMBER/comments" \
+              --field body=@vibebill-comment.md \
+              && echo "created comment" \
+              || echo "::warning::could not post the vibebill comment (read-only GITHUB_TOKEN on fork PRs)"
+          fi
