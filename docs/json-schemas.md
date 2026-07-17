@@ -128,12 +128,15 @@ Envelope plus:
 
 ```jsonc
 {
-  "target": { "model": "deepseek-chat", "displayName": "…" },
-  "scope": "repo" | "range", "range": null|"A..B",
-  "measured": { "cost": Money|null, "byModel": [...] },   // null when nothing priced
-  "repriced": { "cost": Money, "breakdown": MoneyBreakdown,
-                "cacheFallback": false },  // true = cache classes priced at input rate
-  "delta": { "nanoUsd": string, "pct": -98.8 } | null,
+  "target": { "id": "deepseek-chat", "displayName": "…" },
+  "scope": { "kind": "repo" | "range", "range": null | "A..B",
+             "events": n, "tokens": Tokens },
+  "repriced": { "cost": MoneyBreakdown, "provenance": "repriced" },
+  "measured": { "cost": Money,                       // measured actuals in scope
+                "unpricedEvents": n, "unpricedTokens": Tokens },
+  "deltaPct": -98.8 | null,        // null when nothing in scope was priced
+  "cacheFallback": false,          // true = target card lacks cache prices; cache
+                                   //        classes were priced at inputPerMTok
   "label": "repriced — same traffic, different meter; a different model may need more or fewer turns"
 }
 ```
