@@ -81,9 +81,19 @@ export function loadBundledPrices(): PriceTable {
   }
 }
 
-/** Path of the user-refreshed table: (configDir ?? ~/.config)/vibebill/prices.json. */
+/**
+ * Path of the user-refreshed table:
+ * (configDir ?? $VIBEBILL_CONFIG_DIR ?? ~/.config)/vibebill/prices.json.
+ * The env override exists for the same reason as VIBEBILL_CLAUDE_DIR
+ * (spec §10): relocation and hermetic tests.
+ */
 function userPricesPath(configDir?: string): string {
-  return path.join(configDir ?? path.join(homedir(), '.config'), 'vibebill', 'prices.json');
+  const base =
+    configDir ??
+    (process.env['VIBEBILL_CONFIG_DIR'] !== undefined && process.env['VIBEBILL_CONFIG_DIR'] !== ''
+      ? process.env['VIBEBILL_CONFIG_DIR']
+      : path.join(homedir(), '.config'));
+  return path.join(base, 'vibebill', 'prices.json');
 }
 
 /**
