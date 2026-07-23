@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>vibebill — what did this commit cost?</title>
+<meta name="description" content="Git-native cost accounting for AI-assisted repositories. Reads your coding agents' local logs, joins them to git history, and tells you what every commit cost — measured, never guessed." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%230B7A3E'/%3E%3Ctext x='16' y='23' font-family='monospace' font-size='20' fill='%23F2F3EE' text-anchor='middle'%3E%E2%82%B9%3C/text%3E%3C/svg%3E" />
+<style>
+  :root {
+    --ground: #E4E6DF;
+    --paper: #F2F3EE;
+    --ink: #1E241F;
+    --muted: #6B7268;
+    --money: #0B7A3E;
+    --waste: #B3382C;
+    --wip: #8A6A1F;
+    --rule: #C9CCC2;
+    --shadow: rgba(30, 36, 31, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #080B09;
+      --paper: #0D1210;
+      --ink: #D8E0D6;
+      --muted: #7C877D;
+      --money: #4CBB6C;
+      --waste: #C75548;
+      --wip: #D9A036;
+      --rule: #24302A;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground: #E4E6DF;
+    --paper: #F2F3EE;
+    --ink: #1E241F;
+    --muted: #6B7268;
+    --money: #0B7A3E;
+    --waste: #B3382C;
+    --wip: #8A6A1F;
+    --rule: #C9CCC2;
+    --shadow: rgba(30, 36, 31, 0.12);
+  }
+  :root[data-theme="dark"] {
+    --ground: #080B09;
+    --paper: #0D1210;
+    --ink: #D8E0D6;
+    --muted: #7C877D;
+    --money: #4CBB6C;
+    --waste: #C75548;
+    --wip: #D9A036;
+    --rule: #24302A;
+    --shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+  html { background: var(--ground); }
+  body {
+    font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    color: var(--ink);
+    line-height: 1.55;
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem 4rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tape {
+    background: var(--paper);
+    width: 100%;
+    max-width: 46rem;
+    box-shadow: 0 2px 24px var(--shadow);
+    padding: 0 clamp(1rem, 4vw, 2.5rem);
+  }
+  /* Torn receipt edges: zigzag strips of ground color biting into the paper.
+     (A whole-element percentage clip-path breaks compositing on tall pages.) */
+  .tape::before,
+  .tape::after {
+    content: "";
+    display: block;
+    height: 8px;
+    margin: 0 calc(-1 * clamp(1rem, 4vw, 2.5rem));
+    background:
+      linear-gradient(45deg, var(--ground) 5.66px, transparent 0),
+      linear-gradient(-45deg, var(--ground) 5.66px, transparent 0);
+    background-size: 16px 8px;
+    background-repeat: repeat-x;
+  }
+  .tape::after { transform: rotate(180deg); }
+
+  section { padding: 1.75rem 0; }
+  section + section { border-top: 2px dashed var(--rule); }
+
+  .receipt-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 2.25rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .wordmark {
+    font-size: clamp(0.34rem, 1.55vw, 0.72rem);
+    line-height: 1.25;
+    overflow-x: auto;
+    padding: 1.25rem 0 0.5rem;
+  }
+  .wordmark .v { color: var(--ink); font-weight: 700; }
+  /* Currency glyphs carry whitespace block characters don't — upsize BILL so
+     the two words read at equal visual weight. */
+  .wordmark .b {
+    color: var(--money);
+    font-weight: 700;
+    font-size: 1.5em;
+    line-height: 1.1;
+    display: inline-block;
+    margin-top: 0.9em;
+  }
+
+  .pitch {
+    font-size: 1.02rem;
+    max-width: 34rem;
+    padding-top: 0.5rem;
+    text-wrap: balance;
+  }
+  .pitch strong { color: var(--money); }
+
+  .label {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 0.9rem;
+  }
+
+  .install {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .install code {
+    flex: 1 1 16rem;
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+  .install code::before { content: "$ "; color: var(--muted); }
+  .cursor::after {
+    content: "▌";
+    color: var(--money);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor::after { animation: none; }
+  }
+  button.copy {
+    font: inherit;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--money);
+    color: var(--paper);
+    border: none;
+    padding: 0 1.1rem;
+    cursor: pointer;
+  }
+  button.copy:hover { filter: brightness(1.12); }
+  button.copy:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .install-note { font-size: 0.78rem; color: var(--muted); padding-top: 0.6rem; }
+
+  .ledger {
+    background: var(--ground);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.1rem;
+    overflow-x: auto;
+    font-size: clamp(0.55rem, 1.6vw, 0.78rem);
+    line-height: 1.5;
+  }
+  .ledger .row { display: block; white-space: pre; }
+  .ledger .wip { color: var(--wip); }
+  .ledger .sum { font-weight: 700; }
+  .ledger .ok { color: var(--money); }
+  @media (prefers-reduced-motion: no-preference) {
+    .ledger.printing .row {
+      opacity: 0;
+      transform: translateY(-4px);
+      animation: feed 0.28s ease-out forwards;
+    }
+  }
+  @keyframes feed { to { opacity: 1; transform: none; } }
+  .caption { font-size: 0.78rem; color: var(--muted); padding-top: 0.7rem; }
+
+  .items { list-style: none; padding: 0; display: grid; gap: 0.55rem; }
+  .items li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+  }
+  .items .dots {
+    flex: 1;
+    border-bottom: 2px dotted var(--rule);
+    transform: translateY(-4px);
+    min-width: 2rem;
+  }
+  .items .price { color: var(--money); text-align: right; white-space: nowrap; }
+  .items .price code { font-size: 0.82rem; }
+
+  .cmds { display: grid; gap: 0.45rem; font-size: 0.92rem; }
+  .cmds code { display: block; }
+  .cmds code::before { content: "$ "; color: var(--muted); }
+  .cmds .out { color: var(--muted); font-size: 0.8rem; padding-left: 1.05rem; }
+
+  .fine { font-size: 0.78rem; color: var(--muted); display: grid; gap: 0.45rem; }
+  .fine strong { color: var(--ink); font-weight: 700; }
+
+  .links {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+  }
+  a { color: var(--money); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { text-decoration-style: double; }
+  a:focus-visible { outline: 2px solid var(--money); outline-offset: 2px; }
+
+  .foot {
+    text-align: center;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 2.5rem;
+  }
+  .foot .total {
+    font-size: 1rem;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    display: block;
+    padding-bottom: 0.8rem;
+  }
+  .foot .total b { color: var(--money); }
+</style>
+</head>
+<body>
+<main class="tape">
+
+  <div class="receipt-head" role="doc-subtitle">
+    <span>receipt no. v0.2.0</span>
+    <span>·&nbsp; measured, never guessed &nbsp;·</span>
+    <span>MIT</span>
+  </div>
+
+  <section aria-label="vibebill">
+    <pre class="wordmark" aria-hidden="true"><span class="v">██      ██  ██████████  ████████    ██████████
+██      ██      ██      ██      ██  ██
+██      ██      ██      ████████    ██████
+  ██  ██        ██      ██      ██  ██
+    ██      ██████████  ████████    ██████████</span>
+
+<span class="b">₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€          ¥¥
+₹₹      ₹₹      $$      €€          ¥¥
+₹₹₹₹₹₹₹₹        $$      €€          ¥¥
+₹₹      ₹₹      $$      €€          ¥¥
+₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€€€€€€€€€  ¥¥¥¥¥¥¥¥¥¥</span></pre>
+    <h1 class="pitch">Your coding agents already log every token they burn.
+      <strong>vibebill</strong> reads those logs, joins them to git history, and answers:
+      what did this commit cost — and where did the money go?</h1>
+  </section>
+
+  <section aria-label="install">
+    <span class="label">install — nothing to configure</span>
+    <div class="install">
+      <code id="cmd" class="cursor">npx vibebill doctor</code>
+      <button class="copy" id="copyBtn" type="button" aria-label="Copy install command">copy</button>
+    </div>
+    <p class="install-note">Node ≥ 20 · runs read-only on your local agent logs · no telemetry, no cloud, one opt-in network call (<code>--refresh-pricing</code>)</p>
+  </section>
+
+  <section aria-label="the ledger">
+    <span class="label">exhibit a — vibebill costing its own build</span>
+    <div class="ledger printing" id="ledger">
+<span class="row">  cost  conf  hash     date        subject                                  models          sessions</span>
+<span class="row">------  ----  -------  ----------  ---------------------------------------  --------------  --------</span>
+<span class="row wip">$33.24  .     (wip)    2026-07-16  in progress (uncommitted)                claude-fable-5         1</span>
+<span class="row"> $5.77  *     87dd80e  2026-07-15  feat(v0.2): gemini-cli source adapter    claude-fable-5         1</span>
+<span class="row">$11.03  *     2100e23  2026-07-15  feat(core): on-demand aggregation ro...  claude-fable-5         1</span>
+<span class="row"> $7.35  *     cdf2640  2026-07-15  docs: pin gemini/aider adapter contr...  claude-fable-5         1</span>
+<span class="row"> $6.32  *     e0dcdf0  2026-07-15  feat(v0.2): codex and aider source a...  claude-fable-5         1</span>
+<span class="row"> $6.20  *     9c0af05  2026-07-15  feat(m4): terminal table renderer an...  claude-fable-5         1</span>
+<span class="row"> $9.37  *     d847031  2026-07-15  feat(m3): pricing engine — exact big...  claude-fable-5         1</span>
+<span class="row">$14.26  *     77442ae  2026-07-15  feat(m2): git layer and attribution ...  claude-fable-5         1</span>
+<span class="row">$26.40  *     e1d19ce  2026-07-15  feat(m1): claude-code adapter, incre...  claude-fable-5         1</span>
+<span class="row">$10.93  *     fd09c32  2026-07-14  chore: scaffold vibebill — strict TS...  claude-fable-5         1</span>
+<span class="row"> </span>
+<span class="row sum">totals: $97.63 across 9 commits | waste $2.27 | overhead $0.88 | in progress $33.24</span>
+<span class="row ok">accounting: 6.8B tokens = attributed 29.9M + waste 15.3M + overhead 311.5k + out-of-scope 6.7B OK</span>
+    </div>
+    <p class="caption">Real output. This project was built by AI coding agents, and vibebill
+      metered the build commit by commit. The last line is the token-conservation invariant:
+      every parsed token lands in exactly one bucket, checked on every run.</p>
+  </section>
+
+  <section aria-label="what it does">
+    <span class="label">itemized</span>
+    <ul class="items">
+      <li><span>reads local agent transcripts</span><span class="dots"></span><span class="price">claude-code · codex · gemini · aider</span></li>
+      <li><span>attributes usage to commits</span><span class="dots"></span><span class="price">files + timing + branch, confidence-marked</span></li>
+      <li><span>prices every call exactly</span><span class="dots"></span><span class="price">bigint nano-USD, never floats</span></li>
+      <li><span>counterfactual repricing</span><span class="dots"></span><span class="price"><code>reprice --model deepseek-chat</code></span></li>
+      <li><span>markdown ledgers &amp; git notes</span><span class="dots"></span><span class="price"><code>report --md</code> · <code>notes sync</code></span></li>
+      <li><span>PR costing via gh</span><span class="dots"></span><span class="price"><code>vibebill pr --comment</code></span></li>
+      <li><span>privacy</span><span class="dots"></span><span class="price">metadata only — prompts never read</span></li>
+    </ul>
+  </section>
+
+  <section aria-label="quickstart">
+    <span class="label">three commands</span>
+    <div class="cmds">
+      <code>npx vibebill doctor</code>
+      <span class="out">environment check: adapters found, parse coverage, pricing table</span>
+      <code>npx vibebill log</code>
+      <span class="out">git log with a cost column — the screenshot above</span>
+      <code>npx vibebill summary</code>
+      <span class="out">totals, cost by model, cache savings, waste, invariant status</span>
+    </div>
+  </section>
+
+  <section aria-label="fine print">
+    <span class="label">fine print — the honest part</span>
+    <div class="fine">
+      <p><strong>Attribution is probabilistic.</strong> Every figure carries a confidence marker (● ◐ ○) and the evidence is inspectable with <code>vibebill show</code>.</p>
+      <p><strong>Subscription plans show API-equivalent value,</strong> not billed dollars. Repriced numbers are same-traffic counterfactuals, not workload simulations.</p>
+      <p><strong>Unknown models are never guessed:</strong> tokens shown, cost $—. Cursor is unsupported — its usage data lives server-side where no local tool can measure it.</p>
+    </div>
+  </section>
+
+  <section aria-label="links">
+    <span class="label">find it</span>
+    <div class="links">
+      <a href="https://github.com/JARACH-209/VibeBill">github.com/JARACH-209/VibeBill</a>
+      <a href="https://www.npmjs.com/package/vibebill">npmjs.com/package/vibebill</a>
+      <a href="https://achaldixit.in">by Achal Dixit</a>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span class="total">this launch page cost <b>$0.00</b> to serve — it's one static file</span>
+    printed by vibebill 0.2.0 · thank you, come again
+  </div>
+
+</main>
+<script>
+  (function () {
+    var btn = document.getElementById('copyBtn');
+    btn.addEventListener('click', function () {
+      navigator.clipboard.writeText('npx vibebill doctor').then(function () {
+        btn.textContent = 'copied';
+        setTimeout(function () { btn.textContent = 'copy'; }, 1400);
+      });
+    });
+    // Receipt-printer reveal: stagger each ledger row on first view.
+    var rows = document.querySelectorAll('#ledger .row');
+    rows.forEach(function (r, i) { r.style.animationDelay = (0.12 * i) + 's'; });
+  })();
+</script>
+</body>
+</html>
