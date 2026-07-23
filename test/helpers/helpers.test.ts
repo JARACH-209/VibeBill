@@ -363,11 +363,37 @@ describe('makeRepo', () => {
 
     expect(toGitIsoDate(Date.UTC(2026, 0, 3, 4, 5, 6))).toBe('2026-01-03T04:05:06+00:00');
 
+    // git ≥ 2.45 prints strict-ISO UTC as "…Z", older git as "…+00:00" —
+    // compare parsed instants, not strings, so the test is git-version agnostic.
     const log = await repo.git(['log', '--pretty=format:%H %aI %cI %s']);
-    expect(log.split('\n')).toEqual([
-      `${h3} 2026-01-04T00:00:00+00:00 2026-01-04T00:00:00+00:00 c3`,
-      `${h2} 2026-01-03T04:05:06+00:00 2026-01-03T04:05:06+00:00 c2`,
-      `${h1} 2026-01-02T03:04:05+00:00 2026-01-02T03:04:05+00:00 c1`,
+    const rows = log.split('\n').map((line) => {
+      const [hash, aI, cI, ...subject] = line.split(' ');
+      return {
+        hash,
+        authorMs: Date.parse(aI as string),
+        committerMs: Date.parse(cI as string),
+        subject: subject.join(' '),
+      };
+    });
+    expect(rows).toEqual([
+      {
+        hash: h3,
+        authorMs: Date.UTC(2026, 0, 4),
+        committerMs: Date.UTC(2026, 0, 4),
+        subject: 'c3',
+      },
+      {
+        hash: h2,
+        authorMs: Date.UTC(2026, 0, 3, 4, 5, 6),
+        committerMs: Date.UTC(2026, 0, 3, 4, 5, 6),
+        subject: 'c2',
+      },
+      {
+        hash: h1,
+        authorMs: Date.UTC(2026, 0, 2, 3, 4, 5),
+        committerMs: Date.UTC(2026, 0, 2, 3, 4, 5),
+        subject: 'c1',
+      },
     ]);
 
     // real 40-hex hashes, current branch is main
@@ -423,8 +449,10 @@ describe('makeRepo', () => {
       .split('\n')
       .filter((line) => line !== '');
     expect(squashFiles.sort()).toEqual(['sq/x.txt', 'sq/y.txt']);
-    expect(await repo.git(['log', '-1', '--pretty=%aI', squashHash])).toBe(
-      '2026-02-05T00:00:00+00:00',
+    // Parsed-instant comparison: git version differences in UTC suffix ("Z"
+    // vs "+00:00") must not matter.
+    expect(Date.parse(await repo.git(['log', '-1', '--pretty=%aI', squashHash]))).toBe(
+      Date.UTC(2026, 1, 5),
     );
   });
 
