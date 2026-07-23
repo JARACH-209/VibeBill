@@ -62,6 +62,15 @@ npx vibebill log       # 2. git log with cost columns
 npx vibebill summary   # 3. repo rollup: totals, cost by model, cache efficiency, waste
 ```
 
+Other ways to install:
+
+```sh
+brew tap jarach-209/vibebill && brew install vibebill   # Homebrew (macOS/Linux)
+```
+
+Standalone binaries for Linux, macOS, and Windows (no Node required) are attached to each
+[GitHub release](https://github.com/JARACH-209/VibeBill/releases).
+
 vibebill keeps its cache in `<repo>/.vibebill/` (it offers to gitignore it on first run) and
 opens your agents' log directories strictly read-only.
 
