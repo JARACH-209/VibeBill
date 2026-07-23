@@ -52,5 +52,13 @@
     "typescript": "^5.9.0",
     "typescript-eslint": "^8.35.0",
     "vitest": "^3.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JARACH-209/VibeBill.git"
+  },
+  "homepage": "https://github.com/JARACH-209/VibeBill#readme",
+  "bugs": {
+    "url": "https://github.com/JARACH-209/VibeBill/issues"
   }
 }

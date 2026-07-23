@@ -173,7 +173,7 @@ async function execute(
     } else {
       const msg = err instanceof InternalError || err instanceof Error ? err.message : String(err);
       io.err(c.red(`vibebill internal error: ${msg}`));
-      io.err('this is a bug — please file an issue: https://github.com/vibebill/vibebill/issues');
+      io.err('this is a bug — please file an issue: https://github.com/JARACH-209/VibeBill/issues');
       if (debug && err instanceof Error && err.stack !== undefined) io.err(err.stack);
       process.exitCode = 2;
     }
