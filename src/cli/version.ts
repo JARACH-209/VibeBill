@@ -13,6 +13,12 @@ let cached: string | null = null;
 /** The version string from vibebill's own package.json ("0.0.0" if unreadable). */
 export function vibebillVersion(): string {
   if (cached !== null) return cached;
+  // The single-executable build injects the version (no package.json on disk there).
+  const embedded = (globalThis as { __vibebillVersion?: string }).__vibebillVersion;
+  if (typeof embedded === 'string' && embedded.length > 0) {
+    cached = embedded;
+    return cached;
+  }
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
     path.resolve(moduleDir, '../../../package.json'), // dist/src/cli -> package root

@@ -344,6 +344,24 @@ function isMain(): boolean {
   }
 }
 
-if (isMain()) {
-  await buildProgram().parseAsync(process.argv);
+/** True inside a Node single-executable binary (node:sea absent on old Nodes). */
+async function isSeaBinary(): Promise<boolean> {
+  try {
+    const sea = (await import('node:sea')) as { isSea?: () => boolean };
+    return sea.isSea?.() === true;
+  } catch {
+    return false;
+  }
 }
+
+/** Entry gate, kept awaitless at top level so the SEA bundle can be CJS (D15). */
+async function runCli(): Promise<void> {
+  // SEA sets argv[1] to the executable path (mimicking a script arg), so the
+  // standard argv shape applies in both modes; the explicit SEA check exists
+  // because isMain()'s realpath comparison is not guaranteed there.
+  if ((await isSeaBinary()) || isMain()) {
+    await buildProgram().parseAsync(process.argv);
+  }
+}
+
+void runCli();

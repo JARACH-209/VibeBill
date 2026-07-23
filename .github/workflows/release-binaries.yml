@@ -1,0 +1,46 @@
+# Builds standalone vibebill binaries (Node SEA, scripts/build-sea.mjs) on
+# each target OS natively and attaches them to the GitHub release. Runs when a
+# release is published, or on demand via workflow_dispatch with a tag.
+name: release binaries
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to attach binaries to (e.g. v0.2.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  binaries:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest # linux-x64
+          - os: ubuntu-24.04-arm # linux-arm64
+          - os: macos-latest # macos-arm64
+          - os: macos-13 # macos-x64
+          - os: windows-latest # windows-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22 # official full-fat build — required as the SEA base
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: node scripts/build-sea.mjs
+      - name: upload to release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+        run: gh release upload "$TAG" build/sea/vibebill-* --clobber

@@ -148,3 +148,14 @@ counts to safe non-negative integers (`.int().nonnegative().max(2^53−1)`, matc
 "safe < 2^53"); a record carrying an out-of-bounds count is malformed (skipped + counted),
 never an event. aider was already safe (regex-gated integer scaling). Adapter versions
 bumped to '2' so pre-fix caches invalidate.
+
+## D15 (2026-07-23) — standalone binaries via Node SEA; esbuild/postject as dev-only deps
+
+Release binaries are built with Node's Single Executable Applications: tsc output is
+bundled to one CJS file (SEA's requirement — hence the awaitless entry gate in
+src/cli/index.ts) and injected into a copy of the OFFICIAL nodejs.org build for each
+platform (package-manager node builds link a shared libnode and cannot host the SEA blob).
+The binary carries the version and price table as injected globals since it has no
+package.json or prices.json on disk. esbuild and postject are devDependencies used only by
+scripts/build-sea.mjs — the published npm package remains tsc-only per spec §3; this
+tooling exists solely so non-Node users can run vibebill from a GitHub Release download.

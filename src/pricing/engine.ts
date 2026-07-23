@@ -62,8 +62,28 @@ export function resolveBundledPricesPath(fromModuleUrl: string = import.meta.url
   );
 }
 
+/**
+ * The single-executable build (scripts/build-sea.mjs) injects the bundled
+ * price table as a global because a SEA binary carries no prices.json on
+ * disk; absent everywhere else.
+ */
+function embeddedPrices(): unknown {
+  return (globalThis as { __vibebillBundledPrices?: unknown }).__vibebillBundledPrices;
+}
+
 /** zod-validate and load the bundled prices/prices.json (resolved relative to this module). */
 export function loadBundledPrices(): PriceTable {
+  const embedded = embeddedPrices();
+  if (embedded !== undefined) {
+    try {
+      return parsePriceTable(embedded, 'bundled (embedded)').table;
+    } catch (err) {
+      throw new InternalError(
+        err instanceof Error ? err.message : 'invalid embedded price table',
+        err,
+      );
+    }
+  }
   const bundledPath = resolveBundledPricesPath();
   let raw: unknown;
   try {
@@ -122,7 +142,9 @@ export function loadEffectivePrices(opts?: { configDir?: string }): {
     }
   }
   const table = loadBundledPrices();
-  return { table, origin: 'bundled', path: resolveBundledPricesPath(), warnings };
+  const bundledPath =
+    embeddedPrices() !== undefined ? '(embedded in binary)' : resolveBundledPricesPath();
+  return { table, origin: 'bundled', path: bundledPath, warnings };
 }
 
 /**
