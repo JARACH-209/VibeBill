@@ -28,9 +28,12 @@ jobs:
           - os: windows-latest # windows-x64
     runs-on: ${{ matrix.os }}
     steps:
+      # Release events build the tagged code; manual dispatches build the
+      # current branch and only UPLOAD to the named tag (lets tooling added
+      # after a tag still produce that release's binaries).
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22 # official full-fat build — required as the SEA base
