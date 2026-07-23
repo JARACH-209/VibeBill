@@ -1,5 +1,21 @@
-# vibebill
+<!-- markdownlint-disable MD033 -->
 
+```text
+██      ██  ██████████  ████████    ██████████
+██      ██      ██      ██      ██  ██
+██      ██      ██      ████████    ██████
+  ██  ██        ██      ██      ██  ██
+    ██      ██████████  ████████    ██████████
+
+₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€          ¥¥
+₹₹      ₹₹      $$      €€          ¥¥
+₹₹₹₹₹₹₹₹        $$      €€          ¥¥
+₹₹      ₹₹      $$      €€          ¥¥
+₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€€€€€€€€€  ¥¥¥¥¥¥¥¥¥¥
+```
+
+[![npm](https://img.shields.io/npm/v/vibebill.svg)](https://www.npmjs.com/package/vibebill)
+[![CI](https://github.com/JARACH-209/VibeBill/actions/workflows/ci.yml/badge.svg)](https://github.com/JARACH-209/VibeBill/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![node ≥ 20](https://img.shields.io/badge/node-%E2%89%A5%2020-brightgreen.svg)](package.json)
 
