@@ -104,23 +104,22 @@
     color: var(--muted);
   }
 
+  /* VIBE + BILL side by side on one line (two blocks, flex row). */
   .wordmark {
-    font-size: clamp(0.34rem, 1.55vw, 0.72rem);
-    line-height: 1.25;
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
     overflow-x: auto;
     padding: 1.25rem 0 0.5rem;
   }
-  .wordmark .v { color: var(--ink); font-weight: 700; }
-  /* Currency glyphs carry whitespace block characters don't — upsize BILL so
-     the two words read at equal visual weight. */
-  .wordmark .b {
-    color: var(--money);
+  .wordmark pre {
+    margin: 0;
+    font-size: clamp(0.34rem, 1.55vw, 0.72rem);
+    line-height: 1.25;
     font-weight: 700;
-    font-size: 1.5em;
-    line-height: 1.1;
-    display: inline-block;
-    margin-top: 0.9em;
   }
+  .wordmark .v { color: var(--ink); }
+  .wordmark .b { color: var(--money); }
 
   .pitch {
     font-size: 1.02rem;
@@ -264,17 +263,15 @@
   </div>
 
   <section aria-label="vibebill">
-    <pre class="wordmark" aria-hidden="true"><span class="v">██      ██  ██████████  ████████    ██████████
+    <div class="wordmark" aria-hidden="true"><pre class="v">██      ██  ██████████  ████████    ██████████
 ██      ██      ██      ██      ██  ██
 ██      ██      ██      ████████    ██████
   ██  ██        ██      ██      ██  ██
-    ██      ██████████  ████████    ██████████</span>
-
-<span class="b">₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€          ¥¥
-₹₹      ₹₹      $$      €€          ¥¥
-₹₹₹₹₹₹₹₹        $$      €€          ¥¥
-₹₹      ₹₹      $$      €€          ¥¥
-₹₹₹₹₹₹₹₹    $$$$$$$$$$  €€€€€€€€€€  ¥¥¥¥¥¥¥¥¥¥</span></pre>
+    ██      ██████████  ████████    ██████████</pre><pre class="b">████████    ██████████  ██          ██
+██      ██      ██      ██          ██
+████████        ██      ██          ██
+██      ██      ██      ██          ██
+████████    ██████████  ██████████  ██████████</pre></div>
     <h1 class="pitch">Your coding agents already log every token they burn.
       <strong>vibebill</strong> reads those logs, joins them to git history, and answers:
       what did this commit cost — and where did the money go?</h1>
