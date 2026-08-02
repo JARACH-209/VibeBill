@@ -30,15 +30,25 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "ai",
-    "cost",
+    "ai-cost-tracking",
+    "token-usage",
     "claude-code",
-    "codex",
+    "ccusage",
+    "claude-code-cost",
+    "codex-cli",
     "gemini-cli",
     "aider",
+    "llm-cost",
+    "cost-tracking",
+    "token-counter",
+    "ai-spend",
     "git",
-    "tokens",
-    "accounting"
+    "cli",
+    "cost-per-commit",
+    "usage-analytics",
+    "anthropic",
+    "openai",
+    "vibe-coding"
   ],
   "dependencies": {
     "commander": "^14.0.0",

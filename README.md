@@ -15,6 +15,8 @@
 
 **Git-native cost accounting for AI-assisted repositories — measured, never guessed.**
 
+![vibebill demo: doctor, log and summary running on vibebill's own repository](.github/demo.gif)
+
 Your coding agents already write their token usage to disk, one API call at a time. vibebill
 reads those local session logs, joins them to your git history, and answers the question
 nobody's dashboard answers: **what did this commit cost, and where did the money go?**
